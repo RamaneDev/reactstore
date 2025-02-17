@@ -1,3 +1,4 @@
+import { useState } from "react";
 import ProductItem from "../components/ProductItem";
 import useBrands from "../hooks/useBrand";
 import useProductList from "../hooks/useProductList";
@@ -6,6 +7,19 @@ import useProductTypes from "../hooks/useProductType";
 
 
 const StorePage = () => {
+
+    const [filter, setFilter] = useState({
+      brandId : '0',
+      typeId : '0',
+      Search : '',
+    });
+
+    const updateFilter = (field: keyof typeof filter, value: string) => {
+      setFilter((prev) => ({...prev, [field] : value}));
+      console.log(filter);
+    }
+
+
     const { products} = useProductList();
     const { productTypes } = useProductTypes();
     const { brands } = useBrands();
@@ -24,8 +38,11 @@ const StorePage = () => {
             <h5 className="text-warning ml-3">Brands</h5>
             <ul className="list-group my-3">
               {
-                brands.map((brand) => (
-                  <li className="list-group-item" key={brand.id}>
+                [{id:0, name: 'All'}, ...brands].map((brand) => (
+                  <li
+                  className= {filter.brandId === brand.id.toString() ? 'list-group-item active' : 'list-group-item'}
+                  key={brand.id}
+                  onClick={() => updateFilter('brandId', brand.id.toString())}>
                     {brand.name}
                   </li>
                 ))
@@ -35,8 +52,11 @@ const StorePage = () => {
             <h5 className="text-warning ml-3">Types</h5>
             <ul className="list-group my-3">
             {
-                productTypes.map((type) => (
-                  <li className="list-group-item" key={type.id}>
+                 [{id:0, name: 'All'},...productTypes].map((type) => (
+                  <li
+                  className={filter.typeId === type.id.toString() ? 'list-group-item active' : 'list-group-item'}
+                  key={type.id}
+                  onClick={() => updateFilter('typeId', type.id.toString())}>
                     {type.name}
                   </li>
                 ))
